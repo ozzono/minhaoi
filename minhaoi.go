@@ -22,7 +22,7 @@ type Flow struct {
 	c        context.Context
 	User     UserData
 	Invoices []Invoice
-	cancel   []context.CancelFunc
+	cancel   func()
 }
 
 //Invoice has all the invoice data needed for payment
@@ -42,18 +42,12 @@ type UserData struct {
 
 //InvoiceFlow crawls through the enel page
 func (flow *Flow) InvoiceFlow() ([]Invoice, error) {
-	for i := range flow.cancel {
-		defer flow.cancel[i]()
-	}
+	defer flow.cancel()
 
-	err := flow.login()
-	if err != nil {
-		log.Println(err)
+	if err := flow.login(); err != nil {
 		return []Invoice{}, err
 	}
-
-	err = flow.invoiceList()
-	if err != nil {
+	if err := flow.invoiceList(); err != nil {
 		return []Invoice{}, err
 	}
 	return flow.Invoices, nil
@@ -106,9 +100,7 @@ func (flow *Flow) invoiceList() error {
 		flow.invoiceData(refList(i + 1))
 	}
 
-	log.Printf("%#v", flow.Invoices)
-
-	log.Println("Successfully selected the last listed invoice")
+	log.Printf("Successfully fetched %d invoice(s)", nodeCount)
 	return nil
 }
 
@@ -154,7 +146,7 @@ func NewFlow(headless bool) Flow {
 	return Flow{c: ctx, cancel: cancel}
 }
 
-func setContext(headless bool) (context.Context, []context.CancelFunc) {
+func setContext(headless bool) (context.Context, func()) {
 	outputFunc := []context.CancelFunc{}
 	opts := append(chromedp.DefaultExecAllocatorOptions[:],
 		chromedp.DisableGPU,
@@ -165,7 +157,11 @@ func setContext(headless bool) (context.Context, []context.CancelFunc) {
 	outputFunc = append(outputFunc, cancel)
 	ctx, cancel = chromedp.NewContext(ctx)
 	outputFunc = append(outputFunc, cancel)
-	return ctx, outputFunc
+	return ctx, func() {
+		for i := range outputFunc {
+			outputFunc[i]()
+		}
+	}
 }
 
 func (flow *Flow) textByPath(path string) (string, error) {

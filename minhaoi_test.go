@@ -11,7 +11,8 @@ func TestFlow(t *testing.T) {
 	if err != nil {
 		t.Log(err)
 	}
-	flow := NewFlow(false)
+	flow := NewFlow(true)
+
 	flow.User = user
 	invoices, err := flow.InvoiceFlow()
 	if err != nil {
