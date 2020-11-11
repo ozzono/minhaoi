@@ -11,12 +11,25 @@ func TestFlow(t *testing.T) {
 	if err != nil {
 		t.Log(err)
 	}
-	t.Logf("%#v", user)
-	flow := NewFlow(true)
+	flow := NewFlow(false)
 	flow.User = user
-	_, err = flow.InvoiceFlow()
+	invoices, err := flow.InvoiceFlow()
 	if err != nil {
 		t.Log(err)
+	}
+	if len(invoices) == 0 {
+		t.Fatalf("not invoices returned")
+	}
+	for i := range invoices {
+		if len(invoices[i].BarCode) == 0 {
+			t.Fatalf("invalid barcode; cannot be empty")
+		}
+		if len(invoices[i].DueDate) == 0 {
+			t.Fatalf("invalid DueDate; cannot be empty")
+		}
+		if len(invoices[i].Value) == 0 {
+			t.Fatalf("invalid Value; cannot be empty")
+		}
 	}
 }
 

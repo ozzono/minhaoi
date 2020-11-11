@@ -239,7 +239,7 @@ func refList(row int) map[string]string {
 			row,
 		),
 		"barcode": fmt.Sprintf(
-			`#application > div > div.Container__ContainerStyle-sc-1iqy2ia-0.fPvmFf > div > div > div.Container__ContainerStyle-sc-1iqy2ia-0.kyItLy > div:nth-child(2) > div > div > div > div:nth-child(3) > div:nth-child(%d) > div > div.Collapsible__CollapsibleContainer-sc-12167wd-0.exhWjL > div > div > div.Container__ContainerStyle-sc-1iqy2ia-0.fsKtkE > p`,
+			`#application > div > div.Container__ContainerStyle-sc-1iqy2ia-0.fPvmFf > div > div > div.Container__ContainerStyle-sc-1iqy2ia-0.kyItLy > div:nth-child(2) > div > div > div > div:nth-child(3) > div:nth-child(%d) > div > div.Collapsible__CollapsibleContainer-sc-12167wd-0.kaHzyu > div > div > div.Container__ContainerStyle-sc-1iqy2ia-0.fsKtkE > p`,
 			row,
 		),
 		"open-barcode": fmt.Sprintf(
